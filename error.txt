@@ -1,8 +1,1 @@
-Traceback (most recent call last):
-  File "tools/check_dataset.py", line 27, in <module>
-    main()
-  File "tools/check_dataset.py", line 20, in main
-    item = ds[0]
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/cfm_pastis_openmmlab/cfm_mmseg/datasets/pastis_temporal_dataset.py", line 87, in __getitem__
-    info = self.data_list[idx]
-IndexError: list index out of range
+

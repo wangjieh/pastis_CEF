@@ -1,10 +1,18 @@
-cfm_trainable = sum(
-    p.numel() for p in backbone.cfm.parameters() if p.requires_grad
-)
-cfm_total = sum(
-    p.numel() for p in backbone.cfm.parameters()
-)
-runner.logger.info(
-    f'[FreezeBackboneBeforeEpochHook] CFM trainable params: '
-    f'{cfm_trainable:,} / {cfm_total:,}'
-)
+Traceback (most recent call last):
+  File "tools/train.py", line 42, in <module>
+    main()
+  File "tools/train.py", line 37, in main
+    runner = Runner.from_cfg(cfg)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
+    runner = cls(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 372, in __init__
+    self.setup_env(env_cfg)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 675, in setup_env
+    init_dist(self.launcher, **dist_cfg)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/dist/utils.py", line 85, in init_dist
+    _init_dist_pytorch(backend, init_backend=init_backend, **kwargs)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/dist/utils.py", line 102, in _init_dist_pytorch
+    rank = int(os.environ['RANK'])
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/os.py", line 675, in __getitem__
+    raise KeyError(key) from None
+KeyError: 'RANK'

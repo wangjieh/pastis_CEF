@@ -1,67 +1,10 @@
-dataset length: 1455
-inputs shape: (12, 13, 128, 128) torch.float32
-gt shape: (1, 128, 128) torch.int64
-gt unique preview: tensor([-1,  0,  1,  2,  3,  4,  6, 12, 13])
-metainfo: {'target_index': 0, 'img_path': '/mnt/ht2-nas2/wj/PASTIS_evel/dataset/dataset_for_OEF_128/pastis_r_train/s2_images/0.pt', 'num_timesteps': 12, 'img_shape': (128, 128), 'num_channels': 13, 'sample_idx': 0, 'ori_shape': (128, 128), 'target_path': '/mnt/ht2-nas2/wj/PASTIS_evel/dataset/dataset_for_OEF_128/pastis_r_train/targets.pt', 'pad_shape': (128, 128)}
-
-
-Traceback (most recent call last):
-  File "tools/train.py", line 42, in <module>
-    main()
-  File "tools/train.py", line 37, in main
-    runner = Runner.from_cfg(cfg)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
-    runner = cls(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 429, in __init__
-    self.model = self.build_model(model)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 836, in build_model
-    model = MODELS.build(model)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
-    return build_from_cfg(cfg, registry, default_args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/segmentors/encoder_decoder.py", line 92, in __init__
-    self._init_decode_head(decode_head)
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/segmentors/encoder_decoder.py", line 102, in _init_decode_head
-    self.decode_head = MODELS.build(decode_head)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
-    return build_from_cfg(cfg, registry, default_args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/decode_heads/decode_head.py", line 143, in __init__
-    self.loss_decode = build_loss(loss_decode)
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/builder.py", line 38, in build_loss
-    return LOSSES.build(cfg)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
-    return build_from_cfg(cfg, registry, default_args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-TypeError: __init__() got an unexpected keyword argument 'ignore_index'
-
-
-Traceback (most recent call last):
-  File "tools/check_dataset.py", line 38, in <module>
-    main()
-  File "tools/check_dataset.py", line 28, in main
-    ds = DATASETS.build(dict(type='PASTISTemporalPtDataset', data_root=args.data_root, split=args.split, pipeline=pipeline))
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/cfm_pastis_openmmlab/cfm_mmseg/datasets/pastis_temporal_dataset.py", line 77, in __init__
-    super().__init__(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/dataset/base_dataset.py", line 244, in __init__
-    self.pipeline = Compose(pipeline)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/dataset/base_dataset.py", line 38, in __init__
-    transform = TRANSFORMS.build(transform)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 100, in build_from_cfg
-    raise KeyError(
-KeyError: 'LoadPastisTemporalImageFromFile is not in the mmengine::transform registry. Please check whether the value of `LoadPastisTemporalImageFromFile` is correct or it was registered as expected. More details can be found at https://mmengine.readthedocs.io/en/latest/advanced_tutorials/config.html#import-the-custom-module'
+cfm_trainable = sum(
+    p.numel() for p in backbone.cfm.parameters() if p.requires_grad
+)
+cfm_total = sum(
+    p.numel() for p in backbone.cfm.parameters()
+)
+runner.logger.info(
+    f'[FreezeBackboneBeforeEpochHook] CFM trainable params: '
+    f'{cfm_trainable:,} / {cfm_total:,}'
+)

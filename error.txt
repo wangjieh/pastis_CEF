@@ -43,3 +43,25 @@ Traceback (most recent call last):
   File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
     obj = obj_cls(**args)  # type: ignore
 TypeError: __init__() got an unexpected keyword argument 'ignore_index'
+
+
+Traceback (most recent call last):
+  File "tools/check_dataset.py", line 38, in <module>
+    main()
+  File "tools/check_dataset.py", line 28, in main
+    ds = DATASETS.build(dict(type='PASTISTemporalPtDataset', data_root=args.data_root, split=args.split, pipeline=pipeline))
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
+    return self.build_func(cfg, *args, **kwargs, registry=self)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
+    obj = obj_cls(**args)  # type: ignore
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/cfm_pastis_openmmlab/cfm_mmseg/datasets/pastis_temporal_dataset.py", line 77, in __init__
+    super().__init__(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/dataset/base_dataset.py", line 244, in __init__
+    self.pipeline = Compose(pipeline)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/dataset/base_dataset.py", line 38, in __init__
+    transform = TRANSFORMS.build(transform)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
+    return self.build_func(cfg, *args, **kwargs, registry=self)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 100, in build_from_cfg
+    raise KeyError(
+KeyError: 'LoadPastisTemporalImageFromFile is not in the mmengine::transform registry. Please check whether the value of `LoadPastisTemporalImageFromFile` is correct or it was registered as expected. More details can be found at https://mmengine.readthedocs.io/en/latest/advanced_tutorials/config.html#import-the-custom-module'

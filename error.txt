@@ -1,3 +1,10 @@
+dataset length: 1455
+inputs shape: (12, 13, 128, 128) torch.float32
+gt shape: (1, 128, 128) torch.int64
+gt unique preview: tensor([-1,  0,  1,  2,  3,  4,  6, 12, 13])
+metainfo: {'target_index': 0, 'img_path': '/mnt/ht2-nas2/wj/PASTIS_evel/dataset/dataset_for_OEF_128/pastis_r_train/s2_images/0.pt', 'num_timesteps': 12, 'img_shape': (128, 128), 'num_channels': 13, 'sample_idx': 0, 'ori_shape': (128, 128), 'target_path': '/mnt/ht2-nas2/wj/PASTIS_evel/dataset/dataset_for_OEF_128/pastis_r_train/targets.pt', 'pad_shape': (128, 128)}
+
+
 Traceback (most recent call last):
   File "tools/train.py", line 42, in <module>
     main()

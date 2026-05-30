@@ -1,48 +1,17 @@
 Traceback (most recent call last):
   File "tools/train.py", line 87, in <module>
     main()
-  File "tools/train.py", line 82, in main
-    runner = Runner.from_cfg(cfg)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
-    runner = cls(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 429, in __init__
-    self.model = self.build_model(model)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 836, in build_model
-    model = MODELS.build(model)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
-    return build_from_cfg(cfg, registry, default_args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/segmentors/encoder_decoder.py", line 89, in __init__
-    self.backbone = MODELS.build(backbone)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
-    return build_from_cfg(cfg, registry, default_args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/cfm_pastis_seg_openmmlab/cfm_mmseg/models/backbones/copernicus_fm_temporal_seg.py", line 145, in __init__
-    self.cfm = CopernicusFMViT(
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/cfm_pastis_seg_openmmlab/cfm_mmseg/copernicus_fm/models_dwv_seg.py", line 58, in __init__
-    self.patch_embed_variable = Dynamic_MLP_OFA_variable(wv_planes=128, inter_dim=128, kernel_size=16, embed_dim=embed_dim, option=var_option)
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/cfm_pastis_seg_openmmlab/cfm_mmseg/copernicus_fm/dynamic_hypernetwork.py", line 483, in __init__
-    download_url(url, script_dir, filename='var_embed_llama3.2_1B.pt')
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torchvision/datasets/utils.py", line 147, in download_url
-    url = _get_redirect_url(url, max_hops=max_redirect_hops)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torchvision/datasets/utils.py", line 95, in _get_redirect_url
-    with urllib.request.urlopen(urllib.request.Request(url, headers=headers)) as response:
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/urllib/request.py", line 222, in urlopen
-    return opener.open(url, data, timeout)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/urllib/request.py", line 531, in open
-    response = meth(req, response)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/urllib/request.py", line 640, in http_response
-    response = self.parent.error(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/urllib/request.py", line 569, in error
-    return self._call_chain(*args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/urllib/request.py", line 502, in _call_chain
-    result = func(*args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/urllib/request.py", line 649, in http_error_default
-    raise HTTPError(req.full_url, code, msg, hdrs, fp)
-urllib.error.HTTPError: HTTP Error 404: Not Found
+  File "tools/train.py", line 83, in main
+    runner.train()
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 1748, in train
+    self._init_model_weights()
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 923, in _init_model_weights
+    model.init_weights()
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/model/base_module.py", line 136, in init_weights
+    m.init_weights()
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/cfm_pastis_seg_openmmlab/cfm_mmseg/models/backbones/copernicus_fm_temporal_seg.py", line 181, in init_weights
+    msg = self.cfm.load_state_dict(state_dict, strict=False)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1671, in load_state_dict
+    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
+RuntimeError: Error(s) in loading state_dict for CopernicusFMViT:
+        size mismatch for pos_embed: copying a param with shape torch.Size([1, 197, 768]) from checkpoint, the shape in current model is torch.Size([1, 65, 768]).

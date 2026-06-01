@@ -1,12 +1,18 @@
 Traceback (most recent call last):
-  File "test_local.py", line 429, in test_quick_training
-    model = build_segmentor(cfg.model)
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/builder.py", line 51, in build_segmentor
-    return SEGMENTORS.build(
+  File "tools/offical_train.py", line 104, in <module>
+    main()
+  File "tools/offical_train.py", line 93, in main
+    runner = Runner.from_cfg(cfg)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
+    runner = cls(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 429, in __init__
+    self.model = self.build_model(model)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 836, in build_model
+    model = MODELS.build(model)
   File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
     return self.build_func(cfg, *args, **kwargs, registry=self)
   File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
     return build_from_cfg(cfg, registry, default_args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-TypeError: __init__() got an unexpected keyword argument 'train_cfg'
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 100, in build_from_cfg
+    raise KeyError(
+KeyError: 'CopernicusFMLinearProbe is not in the mmengine::model registry. Please check whether the value of `CopernicusFMLinearProbe` is correct or it was registered as expected. More details can be found at https://mmengine.readthedocs.io/en/latest/advanced_tutorials/config.html#import-the-custom-module'

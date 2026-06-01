@@ -1,8 +1,6 @@
-[FAIL] 快速训练测试
-      __init__() got an unexpected keyword argument 'train_cfg'
 Traceback (most recent call last):
   File "test_local.py", line 429, in test_quick_training
-    model = build_segmentor(
+    model = build_segmentor(cfg.model)
   File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/builder.py", line 51, in build_segmentor
     return SEGMENTORS.build(
   File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build

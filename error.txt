@@ -1,11 +1,14 @@
-正在加载一个样本...
-  [FAIL] 数据集测试
-      The size of tensor a (13) must match the size of tensor b (10) at non-singleton dimension 1
+[FAIL] 快速训练测试
+      __init__() got an unexpected keyword argument 'train_cfg'
 Traceback (most recent call last):
-  File "test_local.py", line 362, in test_dataset
-    sample = dataset[0]
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/datasets/pastis_dataset.py", line 178, in __getitem__
-    image = self._normalize(image)
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/datasets/pastis_dataset.py", line 197, in _normalize
-    image = (image - mean) / std
-RuntimeError: The size of tensor a (13) must match the size of tensor b (10) at non-singleton dimension 1
+  File "test_local.py", line 429, in test_quick_training
+    model = build_segmentor(
+  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/builder.py", line 51, in build_segmentor
+    return SEGMENTORS.build(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
+    return self.build_func(cfg, *args, **kwargs, registry=self)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
+    return build_from_cfg(cfg, registry, default_args)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
+    obj = obj_cls(**args)  # type: ignore
+TypeError: __init__() got an unexpected keyword argument 'train_cfg'

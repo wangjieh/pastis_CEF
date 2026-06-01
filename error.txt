@@ -1,10 +1,21 @@
-[FAIL] 前向传播
-      list indices must be integers or slices, not tuple
+Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument mat1 in method wrapper_addmm)
 Traceback (most recent call last):
   File "test_local.py", line 301, in test_forward_pass
     seg_logits = model.forward_test(img, img_metas)
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/copernicusfm_temporal_seg.py", line 283, in forward_test
-    feats = self.extract_feat(img, img_metas)
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/copernicusfm_temporal_seg.py", line 200, in extract_feat
-    meta_t = meta[:, t]  # [B, 4]
-TypeError: list indices must be integers or slices, not tuple
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/copernicusfm_temporal_seg.py", line 318, in forward_test
+    feats = self.extract_feat(img, meta)
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/copernicusfm_temporal_seg.py", line 201, in extract_feat
+    feats_t = self.extract_single_timestep(img_t, meta_t)
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/copernicusfm_temporal_seg.py", line 138, in extract_single_timestep
+    feats = self.backbone(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/models_dwv_seg.py", line 202, in forward
+    x = self.forward_features(x, meta_info, key, wave_list, bandwidth, language_embed, input_mode, kernel_size)
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test1/copernicusfm_mmlab/copernicusfm/models_dwv_seg.py", line 159, in forward_features
+    coord_embed = self.coord_fc(coord_embed)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/linear.py", line 114, in forward
+    return F.linear(input, self.weight, self.bias)
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument mat1 in method wrapper_addmm)

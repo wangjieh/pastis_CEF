@@ -1,33 +1,37 @@
 Traceback (most recent call last):
   File "tools/train.py", line 104, in <module>
     main()
-  File "tools/train.py", line 100, in main
-    runner.train()
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 1728, in train
-    self._train_loop = self.build_train_loop(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 1520, in build_train_loop
-    loop = LOOPS.build(
+  File "tools/train.py", line 93, in main
+    runner = Runner.from_cfg(cfg)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
+    runner = cls(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 429, in __init__
+    self.model = self.build_model(model)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 836, in build_model
+    model = MODELS.build(model)
   File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
     return self.build_func(cfg, *args, **kwargs, registry=self)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
+    return build_from_cfg(cfg, registry, default_args)
   File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
     obj = obj_cls(**args)  # type: ignore
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/loops.py", line 46, in __init__
-    super().__init__(runner, dataloader)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/base_loop.py", line 26, in __init__
-    self.dataloader = runner.build_dataloader(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 1370, in build_dataloader
-    dataset = DATASETS.build(dataset_cfg)
+  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/segmentors/encoder_decoder.py", line 89, in __init__
+    self.backbone = MODELS.build(backbone)
   File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
     return self.build_func(cfg, *args, **kwargs, registry=self)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
+    return build_from_cfg(cfg, registry, default_args)
   File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
     obj = obj_cls(**args)  # type: ignore
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/datasets/pastis_dataset.py", line 136, in __init__
-    super().__init__(
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/datasets/basesegdataset.py", line 142, in __init__
-    self.full_init()
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/dataset/base_dataset.py", line 307, in full_init
-    self.data_bytes, self.data_address = self._serialize_data()
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/dataset/base_dataset.py", line 768, in _serialize_data
-    data_bytes = np.concatenate(data_list)
-  File "<__array_function__ internals>", line 5, in concatenate
-ValueError: need at least one array to concatenate
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/copernicusfm/backbone_temporal.py", line 67, in __init__
+    self.backbone = CopernicusFM(
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/copernicusfm/backbone.py", line 374, in __init__
+    self._load_pretrained(pretrained)
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/copernicusfm/backbone.py", line 384, in _load_pretrained
+    msg = self.encoder.load_state_dict(state_dict, strict=False)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1671, in load_state_dict
+    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
+RuntimeError: Error(s) in loading state_dict for CopernicusFMViT:
+        size mismatch for pos_embed: copying a param with shape torch.Size([1, 197, 768]) from checkpoint, the shape in current model is torch.Size([1, 3137, 768]).
+        size mismatch for patch_embed_spectral.weight_generator.fc_weight.weight: copying a param with shape torch.Size([196608, 128]) from checkpoint, the shape in current model is torch.Size([12288, 128]).
+        size mismatch for patch_embed_spectral.weight_generator.fc_weight.bias: copying a param with shape torch.Size([196608]) from checkpoint, the shape in current model is torch.Size([12288])

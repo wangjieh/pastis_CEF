@@ -1,37 +1,36 @@
 Traceback (most recent call last):
   File "tools/train.py", line 104, in <module>
     main()
-  File "tools/train.py", line 93, in main
-    runner = Runner.from_cfg(cfg)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
-    runner = cls(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 429, in __init__
-    self.model = self.build_model(model)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 836, in build_model
-    model = MODELS.build(model)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
-    return build_from_cfg(cfg, registry, default_args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/segmentors/encoder_decoder.py", line 89, in __init__
-    self.backbone = MODELS.build(backbone)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/registry.py", line 570, in build
-    return self.build_func(cfg, *args, **kwargs, registry=self)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 232, in build_model_from_cfg
-    return build_from_cfg(cfg, registry, default_args)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
-    obj = obj_cls(**args)  # type: ignore
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/copernicusfm/backbone_temporal.py", line 67, in __init__
-    self.backbone = CopernicusFM(
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/copernicusfm/backbone.py", line 374, in __init__
-    self._load_pretrained(pretrained)
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/copernicusfm/backbone.py", line 384, in _load_pretrained
-    msg = self.encoder.load_state_dict(state_dict, strict=False)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1671, in load_state_dict
-    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
-RuntimeError: Error(s) in loading state_dict for CopernicusFMViT:
-        size mismatch for pos_embed: copying a param with shape torch.Size([1, 197, 768]) from checkpoint, the shape in current model is torch.Size([1, 3137, 768]).
-        size mismatch for patch_embed_spectral.weight_generator.fc_weight.weight: copying a param with shape torch.Size([196608, 128]) from checkpoint, the shape in current model is torch.Size([12288, 128]).
-        size mismatch for patch_embed_spectral.weight_generator.fc_weight.bias: copying a param with shape torch.Size([196608]) from checkpoint, the shape in current model is torch.Size([12288])
+  File "tools/train.py", line 100, in main
+    runner.train()
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 1777, in train
+    model = self.train_loop.run()  # type: ignore
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/loops.py", line 98, in run
+    self.run_epoch()
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/loops.py", line 115, in run_epoch
+    self.run_iter(idx, data_batch)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/loops.py", line 131, in run_iter
+    outputs = self.runner.model.train_step(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/model/base_model/base_model.py", line 114, in train_step
+    losses = self._run_forward(data, mode='loss')  # type: ignore
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/model/base_model/base_model.py", line 363, in _run_forward
+    results = self(*data, mode=mode)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/segmentors/base.py", line 94, in forward
+    return self.loss(inputs, data_samples)
+  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/mmseg_custom/models/encoder_decoder_meta.py", line 98, in loss
+    loss_decode = self.decode_head.loss(x, data_samples, self.train_cfg)
+  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/decode_heads/decode_head.py", line 262, in loss
+    losses = self.loss_by_feat(seg_logits, batch_data_samples)
+  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/decode_heads/decode_head.py", line 324, in loss_by_feat
+    loss[loss_decode.loss_name] = loss_decode(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/losses/cross_entropy_loss.py", line 286, in forward
+    loss_cls = self.loss_weight * self.cls_criterion(
+  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/losses/cross_entropy_loss.py", line 45, in cross_entropy
+    loss = F.cross_entropy(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/functional.py", line 3026, in cross_entropy
+    return torch._C._nn.cross_entropy_loss(input, target, weight, _Reduction.get_enum(reduction), ignore_index, label_smoothing)
+RuntimeError: only batches of spatial targets supported (3D tensors) but got targets of size: : [4, 3, 128, 128]

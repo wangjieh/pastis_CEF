@@ -1,36 +1,107 @@
+terminate called after throwing an instance of 'c10::Error'
+  what():  CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
+Exception raised from c10_cuda_check_implementation at /opt/conda/conda-bld/pytorch_1670525552411/work/c10/cuda/CUDAException.cpp:31 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x57 (0x7fccc1bd6457 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::string const&) + 0x64 (0x7fccc1ba03ec in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(std::string const&, std::string const&, int, bool) + 0xb4 (0x7fccf3fe8044 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10_cuda.so)
+frame #3: <unknown function> + 0x164bc (0x7fccf3fbf4bc in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10_cuda.so)
+frame #4: c10::cuda::CUDACachingAllocator::raw_delete(void*) + 0x244 (0x7fccf3fc2434 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10_cuda.so)
+frame #5: <unknown function> + 0x4cf2d3 (0x7fcd098d32d3 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libtorch_python.so)
+frame #6: c10::TensorImpl::~TensorImpl() + 0x1a0 (0x7fccc1bb69e0 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10.so)
+frame #7: c10::TensorImpl::~TensorImpl() + 0x9 (0x7fccc1bb6af9 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10.so)
+frame #8: <unknown function> + 0x72d118 (0x7fcd09b31118 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libtorch_python.so)
+frame #9: THPVariable_subclass_dealloc(_object*) + 0x2d5 (0x7fcd09b31435 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libtorch_python.so)
+frame #10: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #11: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #12: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #13: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #14: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #15: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #16: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #17: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #18: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #19: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #20: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #21: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #22: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #23: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #24: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #25: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #26: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #27: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #28: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3dae]
+frame #29: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #30: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3dae]
+frame #31: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5a73fd]
+frame #32: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4ccf54]
+frame #33: _PyGC_CollectNoFail + 0x2b (0x5a72cb in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #34: PyImport_Cleanup + 0x25e (0x5a704e in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #35: Py_FinalizeEx + 0x71 (0x5a5fb1 in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #36: Py_RunMain + 0x112 (0x5a1a52 in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #37: Py_BytesMain + 0x39 (0x57a0d9 in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #38: __libc_start_main + 0xf3 (0x7fcd65428083 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #39: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x579f8d]
+
+terminate called after throwing an instance of 'c10::Error'
+  what():  CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
+Exception raised from c10_cuda_check_implementation at /opt/conda/conda-bld/pytorch_1670525552411/work/c10/cuda/CUDAException.cpp:31 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::string) + 0x57 (0x7f6c1883c457 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10.so)
+frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::string const&) + 0x64 (0x7f6c188063ec in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10.so)
+frame #2: c10::cuda::c10_cuda_check_implementation(std::string const&, std::string const&, int, bool) + 0xb4 (0x7f6c4ac4e044 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10_cuda.so)
+frame #3: <unknown function> + 0x164bc (0x7f6c4ac254bc in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10_cuda.so)
+frame #4: c10::cuda::CUDACachingAllocator::raw_delete(void*) + 0x244 (0x7f6c4ac28434 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10_cuda.so)
+frame #5: <unknown function> + 0x4cf2d3 (0x7f6c605392d3 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libtorch_python.so)
+frame #6: c10::TensorImpl::~TensorImpl() + 0x1a0 (0x7f6c1881c9e0 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10.so)
+frame #7: c10::TensorImpl::~TensorImpl() + 0x9 (0x7f6c1881caf9 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libc10.so)
+frame #8: <unknown function> + 0x72d118 (0x7f6c60797118 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libtorch_python.so)
+frame #9: THPVariable_subclass_dealloc(_object*) + 0x2d5 (0x7f6c60797435 in /home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/lib/libtorch_python.so)
+frame #10: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #11: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #12: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #13: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #14: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #15: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #16: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #17: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #18: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #19: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #20: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #21: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #22: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #23: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #24: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #25: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #26: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3cff]
+frame #27: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5d4748]
+frame #28: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3dae]
+frame #29: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4f9b46]
+frame #30: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4d3dae]
+frame #31: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x5a73fd]
+frame #32: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x4ccf54]
+frame #33: _PyGC_CollectNoFail + 0x2b (0x5a72cb in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #34: PyImport_Cleanup + 0x25e (0x5a704e in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #35: Py_FinalizeEx + 0x71 (0x5a5fb1 in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #36: Py_RunMain + 0x112 (0x5a1a52 in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #37: Py_BytesMain + 0x39 (0x57a0d9 in /home/users_test/miniconda3/envs/sspp_tune/bin/python)
+frame #38: __libc_start_main + 0xf3 (0x7f6cbc08e083 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #39: /home/users_test/miniconda3/envs/sspp_tune/bin/python() [0x579f8d]
+
+ERROR:torch.distributed.elastic.multiprocessing.api:failed (exitcode: -6) local_rank: 0 (pid: 4134509) of binary: /home/users_test/miniconda3/envs/sspp_tune/bin/python
 Traceback (most recent call last):
-  File "tools/train.py", line 104, in <module>
-    main()
-  File "tools/train.py", line 100, in main
-    runner.train()
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/runner.py", line 1777, in train
-    model = self.train_loop.run()  # type: ignore
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/loops.py", line 98, in run
-    self.run_epoch()
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/loops.py", line 115, in run_epoch
-    self.run_iter(idx, data_batch)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/runner/loops.py", line 131, in run_iter
-    outputs = self.runner.model.train_step(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/model/base_model/base_model.py", line 114, in train_step
-    losses = self._run_forward(data, mode='loss')  # type: ignore
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/mmengine/model/base_model/base_model.py", line 363, in _run_forward
-    results = self(*data, mode=mode)
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
-    return forward_call(*input, **kwargs)
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/segmentors/base.py", line 94, in forward
-    return self.loss(inputs, data_samples)
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/CEF_test/copernicusfm-pastis/mmseg_custom/models/encoder_decoder_meta.py", line 98, in loss
-    loss_decode = self.decode_head.loss(x, data_samples, self.train_cfg)
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/decode_heads/decode_head.py", line 262, in loss
-    losses = self.loss_by_feat(seg_logits, batch_data_samples)
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/decode_heads/decode_head.py", line 324, in loss_by_feat
-    loss[loss_decode.loss_name] = loss_decode(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
-    return forward_call(*input, **kwargs)
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/losses/cross_entropy_loss.py", line 286, in forward
-    loss_cls = self.loss_weight * self.cls_criterion(
-  File "/home/users_test/.local/lib/python3.8/site-packages/mmseg/models/losses/cross_entropy_loss.py", line 45, in cross_entropy
-    loss = F.cross_entropy(
-  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/nn/functional.py", line 3026, in cross_entropy
-    return torch._C._nn.cross_entropy_loss(input, target, weight, _Reduction.get_enum(reduction), ignore_index, label_smoothing)
-RuntimeError: only batches of spatial targets supported (3D tensors) but got targets of size: : [4, 3, 128, 128]
+  File "/home/users_test/miniconda3/envs/sspp_tune/bin/torchrun", line 33, in <module>
+    sys.exit(load_entry_point('torch==1.13.1', 'console_scripts', 'torchrun')())
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 346, in wrapper
+    return f(*args, **kwargs)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/distributed/run.py", line 762, in main
+    run(args)
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/distributed/run.py", line 753, in run
+    elastic_launch(
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/distributed/launcher/api.py", line 132, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/home/users_test/miniconda3/envs/sspp_tune/lib/python3.8/site-packages/torch/distributed/launcher/api.py", line 246, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 

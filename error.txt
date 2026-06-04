@@ -1,194 +1,108 @@
-custom_imports = dict(
-    imports=["projects.olmoearth.olmoearth"],
-    allow_failed_imports=False,
-)
-
-data_root = "/mnt/ht2_nas2/wj/PASTIS_evel/dataset/pastis_dataset_for_mmolmo"
-olmoearth_model_dir = "/mnt/ht2_nas2/EO_test/model/OlmoEarth-v1-Base"
-model_config_path = f"{olmoearth_model_dir}/config.json"
-weights_path = f"{olmoearth_model_dir}/weights.pth"
-work_dir = "./work_dirs/olmoearth-base_4xb4-50e_pastis-s2"
-
-ignore_index = 255
-num_classes = 19
-num_timesteps = 12
-crop_size = (64, 64)
-patch_size = 4
-
-train_pipeline = [
-    dict(
-        type="LoadOlmoEarthArrays",
-        ignore_index=ignore_index,
-        source_ignore_values=(-1,),
-    ),
-    dict(
-        type="OlmoEarthNormalize",
-        modality="sentinel2_l2a",
-        num_timesteps=num_timesteps,
-    ),
-    dict(type="OlmoEarthRandomFlip", horizontal=True, vertical=True),
-    dict(type="PackOlmoEarthSegInputs"),
-]
-
-test_pipeline = [
-    dict(
-        type="LoadOlmoEarthArrays",
-        ignore_index=ignore_index,
-        source_ignore_values=(-1,),
-    ),
-    dict(
-        type="OlmoEarthNormalize",
-        modality="sentinel2_l2a",
-        num_timesteps=num_timesteps,
-    ),
-    dict(type="PackOlmoEarthSegInputs"),
-]
-
-train_dataloader = dict(
-    batch_size=4,
-    num_workers=4,
-    persistent_workers=True,
-    sampler=dict(type="DefaultSampler", shuffle=True),
-    dataset=dict(
-        type="OlmoEarthSegDataset",
-        data_root=data_root,
-        ann_file="train.json",
-        dataset_name="pastis",
-        pipeline=train_pipeline,
-    ),
-)
-
-val_dataloader = dict(
-    batch_size=4,
-    num_workers=4,
-    persistent_workers=True,
-    sampler=dict(type="DefaultSampler", shuffle=False),
-    dataset=dict(
-        type="OlmoEarthSegDataset",
-        data_root=data_root,
-        ann_file="val.json",
-        dataset_name="pastis",
-        pipeline=test_pipeline,
-    ),
-)
-
-test_dataloader = dict(
-    batch_size=4,
-    num_workers=4,
-    persistent_workers=True,
-    sampler=dict(type="DefaultSampler", shuffle=False),
-    dataset=dict(
-        type="OlmoEarthSegDataset",
-        data_root=data_root,
-        ann_file="test.json",
-        dataset_name="pastis",
-        pipeline=test_pipeline,
-    ),
-)
-
-val_evaluator = dict(
-    type="OlmoEarthIoUMetric",
-    num_classes=num_classes,
-    ignore_index=ignore_index,
-    use_valid_mask=False,
-)
-test_evaluator = val_evaluator
-
-data_preprocessor = dict(
-    type="OlmoEarthSegDataPreProcessor",
-    mean=None,
-    std=None,
-    bgr_to_rgb=False,
-    pad_val=0,
-    seg_pad_val=ignore_index,
-    size_divisor=patch_size,
-    test_cfg=dict(size_divisor=patch_size),
-)
-
-model = dict(
-    type="OlmoEarthEncoderDecoder",
-    data_preprocessor=data_preprocessor,
-    backbone=dict(
-        type="OlmoEarthBackbone",
-        model_config_path=model_config_path,
-        init_cfg=dict(type="Pretrained", checkpoint=weights_path),
-        modality="sentinel2_l2a",
-        patch_size=patch_size,
-        num_timesteps=num_timesteps,
-        out_channels=768,
-        pooling_type="mean",
-        fast_pass=True,
-    ),
-    decode_head=dict(
-        type="OlmoEarthPatchLinearHead",
-        in_channels=768,
-        channels=768,
-        in_index=0,
-        num_classes=num_classes,
-        patch_size=patch_size,
-        ignore_index=ignore_index,
-        use_valid_mask=False,
-        valid_mask_loss=False,
-        align_corners=True,
-        loss_decode=dict(
-            type="CrossEntropyLoss",
-            use_sigmoid=False,
-            loss_weight=1.0,
-        ),
-    ),
-    train_cfg=dict(),
-    test_cfg=dict(mode="whole"),
-)
-
-custom_hooks = [dict(type="FreezeBackboneUntilEpochHook", unfreeze_epoch=None)]
-
-optim_wrapper = dict(
-    type="OptimWrapper",
-    optimizer=dict(type="AdamW", lr=0.1, weight_decay=0.01),
-)
-
-param_scheduler = [
-    dict(
-        type="LinearLR",
-        start_factor=1e-6,
-        begin=0,
-        end=5,
-        by_epoch=True,
-    ),
-    dict(
-        type="CosineAnnealingLR",
-        eta_min=1e-5,
-        begin=5,
-        end=50,
-        by_epoch=True,
-    )
-]
-
-train_cfg = dict(type="EpochBasedTrainLoop", max_epochs=50, val_interval=5)
-val_cfg = dict(type="ValLoop")
-test_cfg = dict(type="TestLoop")
-
-default_hooks = dict(
-    timer=dict(type="IterTimerHook"),
-    logger=dict(type="LoggerHook", interval=50, log_metric_by_epoch=True),
-    param_scheduler=dict(type="ParamSchedulerHook"),
-    checkpoint=dict(
-        type="CheckpointHook",
-        by_epoch=True,
-        interval=5,
-        save_best="mIoU",
-    ),
-    sampler_seed=dict(type="DistSamplerSeedHook"),
-    visualization=dict(type="OlmoEarthVisualizationHook"),
-)
-
-env_cfg = dict(
-    cudnn_benchmark=True,
-    mp_cfg=dict(mp_start_method="fork", opencv_num_threads=0),
-    dist_cfg=dict(backend="nccl"),
-)
-
-default_scope = "mmseg"
-log_level = "INFO"
-load_from = None
-resume = False
+/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/olmoearth/utils/checkpoint.py:124: RuntimeWarning: Applied a torch<2.7 import compatibility patch for OLMoEarth. Only normal encoder forward is supported; OLMoEarth FSDP/DDP helpers are intentionally disabled.
+  _patch_torch_23_for_olmoearth_import()
+/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/olmoearth/utils/checkpoint.py:124: RuntimeWarning: Applied a torch<2.7 import compatibility patch for OLMoEarth. Only normal encoder forward is supported; OLMoEarth FSDP/DDP helpers are intentionally disabled.
+  _patch_torch_23_for_olmoearth_import()
+/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/olmoearth/utils/checkpoint.py:124: RuntimeWarning: Applied a torch<2.7 import compatibility patch for OLMoEarth. Only normal encoder forward is supported; OLMoEarth FSDP/DDP helpers are intentionally disabled.
+  _patch_torch_23_for_olmoearth_import()
+/home/users_test/miniconda3/envs/openmm/lib/python3.11/importlib/__init__.py:126: FutureWarning: The 'helios' package has been renamed to 'olmoearth_pretrain'. Please update your imports; this compatibility shim will be removed in a future release.
+  return _bootstrap._gcd_import(name[level:], package, level)
+/home/users_test/miniconda3/envs/openmm/lib/python3.11/importlib/__init__.py:126: FutureWarning: The 'helios' package has been renamed to 'olmoearth_pretrain'. Please update your imports; this compatibility shim will be removed in a future release.
+  return _bootstrap._gcd_import(name[level:], package, level)
+/home/users_test/miniconda3/envs/openmm/lib/python3.11/importlib/__init__.py:126: FutureWarning: The 'helios' package has been renamed to 'olmoearth_pretrain'. Please update your imports; this compatibility shim will be removed in a future release.
+  return _bootstrap._gcd_import(name[level:], package, level)
+/home/users_test/miniconda3/envs/openmm/lib/python3.11/importlib/__init__.py:126: FutureWarning: The 'helios' package has been renamed to 'olmoearth_pretrain'. Please update your imports; this compatibility shim will be removed in a future release.
+  return _bootstrap._gcd_import(name[level:], package, level)
+/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/mmseg/models/losses/cross_entropy_loss.py:250: UserWarning: Default ``avg_non_ignore`` is False, if you would like to ignore the certain label and average loss over non-ignore labels, which is the same with PyTorch official cross_entropy, set ``avg_non_ignore=True``.
+  warnings.warn(
+/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/mmseg/models/losses/cross_entropy_loss.py:250: UserWarning: Default ``avg_non_ignore`` is False, if you would like to ignore the certain label and average loss over non-ignore labels, which is the same with PyTorch official cross_entropy, set ``avg_non_ignore=True``.
+  warnings.warn(
+/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/mmseg/models/losses/cross_entropy_loss.py:250: UserWarning: Default ``avg_non_ignore`` is False, if you would like to ignore the certain label and average loss over non-ignore labels, which is the same with PyTorch official cross_entropy, set ``avg_non_ignore=True``.
+  warnings.warn(
+/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/mmseg/models/losses/cross_entropy_loss.py:250: UserWarning: Default ``avg_non_ignore`` is False, if you would like to ignore the certain label and average loss over non-ignore labels, which is the same with PyTorch official cross_entropy, set ``avg_non_ignore=True``.
+  warnings.warn(
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/train.py", line 104, in <module>
+[rank3]:     main()
+[rank3]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/train.py", line 93, in main
+[rank3]:     runner = Runner.from_cfg(cfg)
+[rank3]:              ^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
+[rank3]:     runner = cls(
+[rank3]:              ^^^^
+[rank3]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 431, in __init__
+[rank3]:     self.model = self.wrap_model(
+[rank3]:                  ^^^^^^^^^^^^^^^^
+[rank3]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 908, in wrap_model
+[rank3]:     if issubclass(
+[rank3]:        ^^^^^^^^^^^
+[rank3]:   File "<frozen abc>", line 123, in __subclasscheck__
+[rank3]: TypeError: issubclass() arg 1 must be a class
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/train.py", line 104, in <module>
+[rank1]:     main()
+[rank1]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/train.py", line 93, in main
+[rank1]:     runner = Runner.from_cfg(cfg)
+[rank1]:              ^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
+[rank1]:     runner = cls(
+[rank1]:              ^^^^
+[rank1]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 431, in __init__
+[rank1]:     self.model = self.wrap_model(
+[rank1]:                  ^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 908, in wrap_model
+[rank1]:     if issubclass(
+[rank1]:        ^^^^^^^^^^^
+[rank1]:   File "<frozen abc>", line 123, in __subclasscheck__
+[rank1]: TypeError: issubclass() arg 1 must be a class
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/train.py", line 104, in <module>
+[rank0]:     main()
+[rank0]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/train.py", line 93, in main
+[rank0]:     runner = Runner.from_cfg(cfg)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
+[rank0]:     runner = cls(
+[rank0]:              ^^^^
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 431, in __init__
+[rank0]:     self.model = self.wrap_model(
+[rank0]:                  ^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 908, in wrap_model
+[rank0]:     if issubclass(
+[rank0]:        ^^^^^^^^^^^
+[rank0]:   File "<frozen abc>", line 123, in __subclasscheck__
+[rank0]: TypeError: issubclass() arg 1 must be a class
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/train.py", line 104, in <module>
+[rank2]:     main()
+[rank2]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/train.py", line 93, in main
+[rank2]:     runner = Runner.from_cfg(cfg)
+[rank2]:              ^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 462, in from_cfg
+[rank2]:     runner = cls(
+[rank2]:              ^^^^
+[rank2]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 431, in __init__
+[rank2]:     self.model = self.wrap_model(
+[rank2]:                  ^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 908, in wrap_model
+[rank2]:     if issubclass(
+[rank2]:        ^^^^^^^^^^^
+[rank2]:   File "<frozen abc>", line 123, in __subclasscheck__
+[rank2]: TypeError: issubclass() arg 1 must be a class
+E0604 10:23:21.308000 140448027296960 torch/distributed/elastic/multiprocessing/api.py:826] failed (exitcode: 1) local_rank: 0 (pid: 709401) of binary: /home/users_test/miniconda3/envs/openmm/bin/python3.11
+Traceback (most recent call last):
+  File "/home/users_test/miniconda3/envs/openmm/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 347, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/torch/distributed/run.py", line 879, in main
+    run(args)
+  File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/torch/distributed/run.py", line 870, in run
+    elastic_launch(
+  File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 132, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 263, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 

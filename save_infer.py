@@ -7,7 +7,6 @@ from typing import Optional, Sequence
 import numpy as np
 import torch
 from mmengine import mkdir_or_exist
-from mmengine.dist import get_dist_info
 from mmengine.evaluator import BaseMetric
 from mmengine.logging import MMLogger, print_log
 from mmseg.registry import METRICS
@@ -64,21 +63,54 @@ def _valid_mask_tensor(
     return valid.squeeze().to(dtype=torch.bool)
 
 
+def _safe_name(name: str) -> str:
+    """Make a string safe for filename usage."""
+    name = str(name)
+    name = name.replace("/", "_")
+    name = name.replace("\\", "_")
+    name = name.replace(" ", "_")
+    return name
+
+
+def _folder_prefixed_basename(path: str) -> str:
+    """Return parent-folder-prefixed filename stem.
+
+    Example:
+        /data/folder_a/0001.tif -> folder_a_0001
+        /data/folder_b/0001.tif -> folder_b_0001
+    """
+    path = str(path)
+
+    file_stem = osp.splitext(osp.basename(path))[0]
+    parent_dir = osp.basename(osp.dirname(path))
+
+    file_stem = _safe_name(file_stem)
+    parent_dir = _safe_name(parent_dir)
+
+    if parent_dir:
+        return f"{parent_dir}_{file_stem}"
+
+    return file_stem
+
+
 @METRICS.register_module()
 class OlmoEarthIoUMetric(BaseMetric):
     """IoU metric with optional OLMoEarth valid-mask filtering.
 
-    如果传入 output_dir，则会把每个预测结果保存为单通道 8-bit PNG。
-    保存的像素值是类别 ID：
+    If output_dir is given, every predicted mask will be saved as a
+    single-channel 8-bit PNG.
+
+    Saved PNG values are raw class ids:
 
         class 0 -> pixel value 0
         class 1 -> pixel value 1
         class 2 -> pixel value 2
         ...
 
-    注意：
-        8-bit PNG 只能无损保存 0~255 的类别 ID。
-        如果类别数超过 256，不建议使用 8-bit PNG 保存类别 ID。
+    Filename rule:
+
+        input:  /path/to/folder_a/0001.tif
+        output: output_dir/folder_a_0001.png
     """
 
     default_prefix = None
@@ -111,7 +143,7 @@ class OlmoEarthIoUMetric(BaseMetric):
         self.output_dir = output_dir
         self.format_only = format_only
 
-        self.rank, self.world_size = get_dist_info()
+        # Only used when img_path / seg_map_path / img_id are unavailable.
         self._save_index = 0
 
         if self.format_only and self.output_dir is None:
@@ -161,26 +193,31 @@ class OlmoEarthIoUMetric(BaseMetric):
             )
 
     def _save_prediction(self, pred: torch.Tensor, sample) -> None:
-        """Save one predicted segmentation mask as single-channel 8-bit PNG."""
+        """Save one predicted segmentation mask as single-channel 8-bit PNG.
+
+        Output filename format:
+
+            parentFolder_originalName.png
+
+        Example:
+
+            /data/patch_001/image.tif -> patch_001_image.png
+        """
 
         img_path = _sample_get(sample, "img_path")
         seg_map_path = _sample_get(sample, "seg_map_path")
         img_id = _sample_get(sample, "img_id")
 
         if img_path is not None:
-            raw_name = osp.splitext(osp.basename(str(img_path)))[0]
+            basename = _folder_prefixed_basename(str(img_path))
         elif seg_map_path is not None:
-            raw_name = osp.splitext(osp.basename(str(seg_map_path)))[0]
+            basename = _folder_prefixed_basename(str(seg_map_path))
         elif img_id is not None:
-            raw_name = str(img_id)
+            basename = _safe_name(osp.splitext(osp.basename(str(img_id)))[0])
         else:
-            raw_name = "sample"
+            basename = f"{self._save_index:08d}"
 
-        # 关键：文件名必须唯一，否则会被覆盖。
-        # rank 用于避免多卡分布式推理时不同进程写同名文件。
-        # _save_index 用于避免同一 rank 内多个样本写同名文件。
-        filename = f"rank{self.rank:03d}_{self._save_index:08d}_{raw_name}.png"
-        out_file = osp.join(self.output_dir, filename)
+        out_file = osp.join(self.output_dir, basename + ".png")
 
         pred_np = pred.detach().cpu().numpy().squeeze()
 
@@ -194,7 +231,7 @@ class OlmoEarthIoUMetric(BaseMetric):
 
         if pred_min < 0:
             raise ValueError(
-                f"预测结果中存在负数类别 ID: min={pred_min}，无法保存为 uint8 类别图。"
+                f"预测结果中存在负数类别 ID: min={pred_min}，无法保存为 uint8 PNG。"
             )
 
         if pred_max > 255:
@@ -203,7 +240,7 @@ class OlmoEarthIoUMetric(BaseMetric):
                 "8-bit PNG 只能保存 0~255。"
             )
 
-        # 单通道、8 位深 PNG
+        # 保存为单通道、8 位深 PNG。
         pred_np = pred_np.astype(np.uint8)
         pred_np = np.ascontiguousarray(pred_np)
 

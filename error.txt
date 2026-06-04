@@ -1,16 +1,29 @@
 Traceback (most recent call last):
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/tools/extract_embeddings.py", line 1121, in <module>
-    main()
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/tools/extract_embeddings.py", line 1056, in main
-    local_summaries = [
-                      ^
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/tools/extract_embeddings.py", line 1057, in <listcomp>
-    _extract_split(
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/tools/extract_embeddings.py", line 838, in _extract_split
-    embedding_names = _flush_shape_buckets(
-                      ^^^^^^^^^^^^^^^^^^^^^
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/tools/extract_embeddings.py", line 726, in _flush_shape_buckets
-    _save_task_output(
-  File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/tools/extract_embeddings.py", line 302, in _save_task_output
-    raise KeyError(
-KeyError: "Raw input export was requested, but the pipeline did not provide 'olmoearth_raw_img'."
+[rank0]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/test.py", line 123, in <module>
+[rank0]:     main()
+[rank0]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/../../tools/test.py", line 119, in main
+[rank0]:     runner.test()
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 1823, in test
+[rank0]:     metrics = self.test_loop.run()  # type: ignore
+[rank0]:               ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/loops.py", line 463, in run
+[rank0]:     self.run_iter(idx, data_batch)
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/loops.py", line 492, in run_iter
+[rank0]:     self.runner.call_hook(
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/runner/runner.py", line 1839, in call_hook
+[rank0]:     getattr(hook, fn_name)(self, **kwargs)
+[rank0]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/projects/olmoearth/olmoearth/hooks.py", line 220, in after_test_iter
+[rank0]:     self._visualizer.add_datasample(
+[rank0]:   File "/home/users_test/miniconda3/envs/openmm/lib/python3.11/site-packages/mmengine/dist/utils.py", line 427, in wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/mmseg/visualization/local_visualizer.py", line 309, in add_datasample
+[rank0]:     gt_img_data = self._draw_sem_seg(image, data_sample.gt_sem_seg,
+[rank0]:                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/mnt/ht2-nas2/wj/PASTIS_evel/OEF/mmolo/mmseg_olmoearth/mmseg/visualization/local_visualizer.py", line 140, in _draw_sem_seg
+[rank0]:     mask[sem_seg[0] == label, :] = color
+[rank0]:     ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]: IndexError: boolean index did not match indexed array along axis 0; size of axis is 16 but size of corresponding boolean axis is 64

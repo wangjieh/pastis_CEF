@@ -20,9 +20,11 @@ def _sample_get(sample, key: str):
     if isinstance(sample, dict):
         if key in sample:
             return sample.get(key)
+
         metainfo = sample.get("metainfo", None)
         if isinstance(metainfo, dict):
             return metainfo.get(key)
+
         return None
 
     value = getattr(sample, key, None)
@@ -41,6 +43,7 @@ def _pixel_data_tensor(value) -> torch.Tensor:
         value = value["data"]
     elif hasattr(value, "data"):
         value = value.data
+
     return value.squeeze().long()
 
 
@@ -65,20 +68,17 @@ def _valid_mask_tensor(
 class OlmoEarthIoUMetric(BaseMetric):
     """IoU metric with optional OLMoEarth valid-mask filtering.
 
-    The reported metric names and values follow MMSeg's ``IoUMetric``:
-    percentages for ``aAcc``, ``mIoU``, ``mAcc`` and optional F-score metrics.
+    如果传入 output_dir，则会把每个预测结果保存为单通道 8-bit PNG。
+    保存的像素值是类别 ID：
 
-    Args:
-        num_classes: Number of semantic classes.
-        ignore_index: Label index to ignore.
-        iou_metrics: Metrics to calculate. Supports "mIoU", "mDice", "mFscore".
-        nan_to_num: If not None, replace NaN with this value.
-        beta: Beta value for F-score.
-        use_valid_mask: Whether to additionally filter pixels by gt_valid_mask.
-        collect_device: Device for collecting results.
-        prefix: Metric prefix.
-        output_dir: Directory to save predicted segmentation masks.
-        format_only: If True, only save prediction masks and do not compute metrics.
+        class 0 -> pixel value 0
+        class 1 -> pixel value 1
+        class 2 -> pixel value 2
+        ...
+
+    注意：
+        8-bit PNG 只能无损保存 0~255 的类别 ID。
+        如果类别数超过 256，不建议使用 8-bit PNG 保存类别 ID。
     """
 
     default_prefix = None
@@ -110,6 +110,8 @@ class OlmoEarthIoUMetric(BaseMetric):
 
         self.output_dir = output_dir
         self.format_only = format_only
+
+        self.rank, self.world_size = get_dist_info()
         self._save_index = 0
 
         if self.format_only and self.output_dir is None:
@@ -119,6 +121,13 @@ class OlmoEarthIoUMetric(BaseMetric):
 
         if self.output_dir is not None:
             mkdir_or_exist(self.output_dir)
+
+        if self.num_classes > 256:
+            print_log(
+                f"警告：当前 num_classes={self.num_classes}，"
+                "但你要求保存为 8-bit PNG。8-bit PNG 只能无损保存 0~255 的类别 ID。",
+                logger=MMLogger.get_current_instance(),
+            )
 
     def process(self, data_batch: dict, data_samples: Sequence[dict]) -> None:
         for sample in data_samples:
@@ -140,41 +149,38 @@ class OlmoEarthIoUMetric(BaseMetric):
                     self.ignore_index,
                 )
 
-            pred = pred[valid]
-            gt = gt[valid]
+            pred_valid = pred[valid]
+            gt_valid = gt[valid]
 
             self.results.append(
                 self.intersect_and_union(
-                    pred,
-                    gt,
+                    pred_valid,
+                    gt_valid,
                     self.num_classes,
                 )
             )
 
     def _save_prediction(self, pred: torch.Tensor, sample) -> None:
-        """Save predicted segmentation mask to output_dir.
-
-        The saved png contains raw class ids:
-        class 0 -> pixel value 0,
-        class 1 -> pixel value 1,
-        ...
-        """
+        """Save one predicted segmentation mask as single-channel 8-bit PNG."""
 
         img_path = _sample_get(sample, "img_path")
         seg_map_path = _sample_get(sample, "seg_map_path")
         img_id = _sample_get(sample, "img_id")
 
         if img_path is not None:
-            basename = osp.splitext(osp.basename(str(img_path)))[0]
+            raw_name = osp.splitext(osp.basename(str(img_path)))[0]
         elif seg_map_path is not None:
-            basename = osp.splitext(osp.basename(str(seg_map_path)))[0]
+            raw_name = osp.splitext(osp.basename(str(seg_map_path)))[0]
         elif img_id is not None:
-            basename = str(img_id)
+            raw_name = str(img_id)
         else:
-            rank, _ = get_dist_info()
-            basename = f"rank{rank}_{self._save_index:06d}"
+            raw_name = "sample"
 
-        out_file = osp.join(self.output_dir, basename + ".png")
+        # 关键：文件名必须唯一，否则会被覆盖。
+        # rank 用于避免多卡分布式推理时不同进程写同名文件。
+        # _save_index 用于避免同一 rank 内多个样本写同名文件。
+        filename = f"rank{self.rank:03d}_{self._save_index:08d}_{raw_name}.png"
+        out_file = osp.join(self.output_dir, filename)
 
         pred_np = pred.detach().cpu().numpy().squeeze()
 
@@ -183,12 +189,25 @@ class OlmoEarthIoUMetric(BaseMetric):
                 f"预测结果应该是 2D mask，但得到 shape={pred_np.shape}"
             )
 
-        if pred_np.max() > 255:
-            pred_np = pred_np.astype(np.uint16)
-        else:
-            pred_np = pred_np.astype(np.uint8)
+        pred_min = int(pred_np.min()) if pred_np.size > 0 else 0
+        pred_max = int(pred_np.max()) if pred_np.size > 0 else 0
 
-        Image.fromarray(pred_np).save(out_file)
+        if pred_min < 0:
+            raise ValueError(
+                f"预测结果中存在负数类别 ID: min={pred_min}，无法保存为 uint8 类别图。"
+            )
+
+        if pred_max > 255:
+            raise ValueError(
+                f"预测结果中存在大于 255 的类别 ID: max={pred_max}。"
+                "8-bit PNG 只能保存 0~255。"
+            )
+
+        # 单通道、8 位深 PNG
+        pred_np = pred_np.astype(np.uint8)
+        pred_np = np.ascontiguousarray(pred_np)
+
+        Image.fromarray(pred_np, mode="L").save(out_file)
 
         self._save_index += 1
 
@@ -210,6 +229,7 @@ class OlmoEarthIoUMetric(BaseMetric):
             return OrderedDict()
 
         results = tuple(zip(*results))
+
         total_area_intersect = sum(results[0])
         total_area_union = sum(results[1])
         total_area_pred_label = sum(results[2])
@@ -240,12 +260,14 @@ class OlmoEarthIoUMetric(BaseMetric):
                 metrics[f"m{key}"] = value
 
         ret_metrics.pop("aAcc", None)
+
         ret_metrics_class = OrderedDict(
             {
                 key: np.round(value * 100, 2)
                 for key, value in ret_metrics.items()
             }
         )
+
         ret_metrics_class.update({"Class": self._class_names()})
         ret_metrics_class.move_to_end("Class", last=False)
 
@@ -273,6 +295,7 @@ class OlmoEarthIoUMetric(BaseMetric):
         num_classes: int,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         in_range = (label >= 0) & (label < num_classes)
+
         pred_label = pred_label[in_range].clamp(0, num_classes - 1)
         label = label[in_range]
 
@@ -329,6 +352,7 @@ class OlmoEarthIoUMetric(BaseMetric):
             if metric == "mIoU":
                 iou = total_area_intersect / total_area_union
                 acc = total_area_intersect / total_area_label
+
                 ret_metrics["IoU"] = iou
                 ret_metrics["Acc"] = acc
 
@@ -337,6 +361,7 @@ class OlmoEarthIoUMetric(BaseMetric):
                     total_area_pred_label + total_area_label
                 )
                 acc = total_area_intersect / total_area_label
+
                 ret_metrics["Dice"] = dice
                 ret_metrics["Acc"] = acc
 
@@ -388,6 +413,7 @@ class OlmoEarthAccuracyMetric(BaseMetric):
         **kwargs,
     ) -> None:
         super().__init__(collect_device=collect_device, prefix=prefix)
+
         self.ignore_index = ignore_index
         self.use_valid_mask = use_valid_mask
 

@@ -1,1 +1,110 @@
-non-normalized or out of bounds coordinates [1.0237501 1.0187501]
+from pathlib import Path
+from math import hypot
+from PIL import Image
+from tqdm import tqdm
+
+
+# ================== 路径配置 ==================
+img_dir = Path("images")              # 图像目录
+dota_label_dir = Path("labels_dota")  # DOTA格式标签目录
+save_dir = Path("labels")             # 输出YOLO-OBB标签目录
+classes_file = Path("classes.txt")
+
+save_dir.mkdir(parents=True, exist_ok=True)
+
+# ================== 读取类别 ==================
+classes = [x.strip() for x in classes_file.read_text(encoding="utf-8").splitlines() if x.strip()]
+cls2id = {c: i for i, c in enumerate(classes)}
+
+img_exts = [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff"]
+
+
+def find_image(stem):
+    for ext in img_exts:
+        p = img_dir / f"{stem}{ext}"
+        if p.exists():
+            return p
+    return None
+
+
+def clamp(v, low, high):
+    return max(low, min(v, high))
+
+
+def clip_coords(coords, w, h):
+    out = []
+    for i, v in enumerate(coords):
+        out.append(clamp(v, 0, w) if i % 2 == 0 else clamp(v, 0, h))
+    return out
+
+
+def dist(p1, p2):
+    return hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+
+def valid_box(coords):
+    pts = [(coords[i], coords[i + 1]) for i in range(0, 8, 2)]
+
+    box_w = (dist(pts[0], pts[1]) + dist(pts[2], pts[3])) / 2
+    box_h = (dist(pts[1], pts[2]) + dist(pts[3], pts[0])) / 2
+
+    return box_w >= 1 and box_h >= 1
+
+
+def convert_one(label_path):
+    img_path = find_image(label_path.stem)
+    if img_path is None:
+        print(f"找不到对应图像: {label_path.name}")
+        return
+
+    with Image.open(img_path) as img:
+        w, h = img.size
+
+    out_lines = []
+
+    for line in label_path.read_text(encoding="utf-8").splitlines():
+        parts = line.strip().split()
+
+        # DOTA格式: x1 y1 x2 y2 x3 y3 x4 y4 class difficult
+        if len(parts) < 9:
+            continue
+
+        try:
+            coords = list(map(float, parts[:8]))
+        except ValueError:
+            continue
+
+        cls_name = parts[8]
+        if cls_name not in cls2id:
+            print(f"未知类别，已跳过: {cls_name} | {label_path.name}")
+            continue
+
+        # 裁剪越界坐标
+        coords = clip_coords(coords, w, h)
+
+        # 去掉长或宽小于1像素的框
+        if not valid_box(coords):
+            continue
+
+        # 归一化
+        norm = []
+        for i, v in enumerate(coords):
+            if i % 2 == 0:
+                norm.append(clamp(v / w, 0, 1))
+            else:
+                norm.append(clamp(v / h, 0, 1))
+
+        cls_id = cls2id[cls_name]
+        out_lines.append(str(cls_id) + " " + " ".join(f"{x:.6f}" for x in norm))
+
+    save_path = save_dir / label_path.name
+    save_path.write_text("\n".join(out_lines), encoding="utf-8")
+
+
+# ================== 批量转换 ==================
+label_files = list(dota_label_dir.glob("*.txt"))
+
+for label_path in tqdm(label_files, desc="Converting DOTA to YOLO-OBB"):
+    convert_one(label_path)
+
+print("转换完成")
